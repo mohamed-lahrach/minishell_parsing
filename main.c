@@ -29,15 +29,15 @@ int main(int argc, char **argv)
             free(input);
             continue;
         }
-        char *modified_input = add_spaces_around_special_chars(input);
-        if (modified_input == NULL)
+        input = add_spaces_around_special_chars(input);
+        if (input == NULL)
         {
             printf("Syntax Error\n");
             free(input);
             continue;
         }
 
-        lexer_phase(&lexer, modified_input);
+        lexer_phase(&lexer, input);
 
         t_lexer *current = lexer;
         const char *token_names[] = {
@@ -49,7 +49,7 @@ int main(int argc, char **argv)
             "WORD",
             "WHITESPACE",
         };
-        printf("%s\n", modified_input);
+        printf("%s\n", input);
         while (current)
         {
             printf("Type: {%s}, Value: `%s`\n--------------------------------------\n", token_names[current->type], current->value);
@@ -58,7 +58,6 @@ int main(int argc, char **argv)
 
         free_lexer(&lexer);
         free(input);
-        free(modified_input);
     }
     //parser_phase(lexer);
     return 0;
