@@ -2,13 +2,19 @@
 
 void lexer_phase(t_lexer **lexer, char *input)
 {
-    char *str = input;
-    int word_index = 0;
-    enum token_type type;
-    int inside_quotes = 0;
+    char *str;
+    int inside_quotes;
+    int word_index;
+    int start;
+    int i;
     char *my_word;
-    int start = 0;
-    int i = 0;
+    enum token_type type;
+
+    str = input;
+    inside_quotes = 0;
+    word_index = 0;
+    start = 0;
+    i = 0;
     while (*str != '\0')
     {
         if (*str == '"' && inside_quotes == 0)
@@ -58,6 +64,7 @@ void lexer_phase(t_lexer **lexer, char *input)
                     type = (*str == '>') ? REDIRECT_APPEND : REDIRECT_INPUT;
                     my_word = ft_substr(str, 0, 2);
                     str++;
+                    i++;
                 }
                 else if (*str == '<' || *str == '>')
                 {
