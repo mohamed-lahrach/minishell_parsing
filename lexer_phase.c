@@ -2,92 +2,82 @@
 
 void lexer_phase(t_lexer **lexer, char *input)
 {
-    char *str;
     int inside_quotes;
-    int word_index;
+    int current_word_len;
     int start;
     int i;
-    char *my_word;
+    char *current_word;
     enum token_type type;
 
-    str = input;
     inside_quotes = 0;
-    word_index = 0;
+    current_word_len = 0;
     start = 0;
     i = 0;
-    while (*str != '\0')
+    while (input[i] != '\0')
     {
-        if (*str == '"' && inside_quotes == 0)
+        if (input[i] == '"' && inside_quotes == 0)
         {
             inside_quotes = 1;
-            word_index++;
+            current_word_len++;
         }
-        else if (*str == '"' && inside_quotes == 1)
+        else if (input[i] == '"' && inside_quotes == 1)
         {
             inside_quotes = 0;
-            word_index++;
+            current_word_len++;
         }
-        else if (*str == '\'' && inside_quotes == 0)
+        else if (input[i] == '\'' && inside_quotes == 0)
         {
             inside_quotes = 2;
-            word_index++;
+            current_word_len++;
         }
-        else if (*str == '\'' && inside_quotes == 2)
+        else if (input[i] == '\'' && inside_quotes == 2)
         {
             inside_quotes = 0;
-            word_index++;
+            current_word_len++;
         }
         else if (inside_quotes)
-            word_index++;
+            current_word_len++;
         else
         {
-            if (*str == ' ' || *str == '\t')
+            if (input[i] == ' ' || input[i] == '\t')
             {
-                if (word_index > 0)
+                if (current_word_len > 0)
                 {
-                    my_word = ft_substr(input, start, word_index);
-                    append_lexer_node(lexer, create_lexer_node(my_word, WORD));
-                    word_index = 0;
+                    current_word = ft_substr(input, start, current_word_len);
+                    append_lexer_node(lexer, create_lexer_node(current_word, WORD));
+                    current_word_len = 0;
                 }
                 start = i + 1;
             }
-            else if (*str == '<' || *str == '|' || *str == '>')
+            else if (input[i] == '<' || input[i] == '|' || input[i] == '>')
             {
-                if (word_index > 0)
+                if ((input[i] == '>' && input[i + 1] == '>') || (input[i] == '<' && input[i + 1] == '<'))
                 {
-                    my_word = ft_substr(input, start, word_index);
-                    append_lexer_node(lexer, create_lexer_node(my_word, WORD));
-                    word_index = 0;
-                }
-                if ((*str == '>' && *(str + 1) == '>') || (*str == '<' && *(str + 1) == '<'))
-                {
-                    type = (*str == '>') ? REDIRECT_APPEND : REDIRECT_INPUT;
-                    my_word = ft_substr(str, 0, 2);
-                    str++;
+                    type = (input[i] == '>') ? REDIRECT_APPEND : REDIRECT_INPUT;
+                    current_word = ft_substr(input + i, 0, 2);
                     i++;
                 }
-                else if (*str == '<' || *str == '>')
+                else if (input[i] == '<' || input[i] == '>')
                 {
-                    type = (*str == '>') ? REDIRECT_OUT : REDIRECT_IN;
-                    my_word = ft_substr(str, 0, 1);
+                    type = (input[i] == '>') ? REDIRECT_OUT : REDIRECT_IN;
+                    current_word = ft_substr(input + i, 0, 1);
                 }
-                else if (*str == '|')
+                else if (input[i] == '|')
                 {
                     type = PIPE;
-                    my_word = ft_substr(str, 0, 1);
+                    current_word = ft_substr(input + i, 0, 1);
                 }
-                append_lexer_node(lexer, create_lexer_node(my_word, type));
+                append_lexer_node(lexer, create_lexer_node(current_word, type));
             }
             else
-                word_index++;
+                current_word_len++;
         }
-        str++;
         i++;
     }
 
-    if (word_index > 0)
+    if (current_word_len > 0)
     {
-        my_word = ft_substr(input, start, word_index);
-        append_lexer_node(lexer, create_lexer_node(my_word, WORD));
+        current_word = ft_substr(input, start, current_word_len);
+        append_lexer_node(lexer, create_lexer_node(current_word, WORD));
     }
 }
