@@ -29,6 +29,7 @@ typedef struct parser
 } t_parser;
 
 
+int syntax_error(t_lexer *lexer);
 int check_for_closed_quotes(char *input);
 char *add_spaces_around_special_chars(const char *input);
 void lexer_phase(t_lexer **lexer, char *input);
