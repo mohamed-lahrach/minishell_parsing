@@ -74,9 +74,6 @@ char *add_spaces_around_special_chars(const char *input)
 
             modified_input[j++] = ' ';
         }
-        // else if ()
-        // {
-        // }
         else
         {
             modified_input[j++] = input[i];
@@ -87,6 +84,13 @@ char *add_spaces_around_special_chars(const char *input)
     return modified_input;
 }
 
+size_t strlen_to_char(const char *s, char c)
+{
+    int len = 0;
+    while (s[len] != '\0' && s[len] != c)
+        len++;
+    return len;
+}
 
 char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
@@ -106,4 +110,23 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	}
 	sub_string[i] = '\0';
 	return (sub_string);
+}
+void show_lexer(t_lexer *lexer)
+{
+    t_lexer *current = lexer;
+    char *token_type[6] =
+        {
+            "PIPE",            // = |
+            "REDIRECT_OUT",    // = >
+            "REDIRECT_IN",     // = <
+            "REDIRECT_APPEND", // = >>
+            "REDIRECT_INPUT",  //= <<
+            "WORD",
+        };
+    while (current != NULL)
+    {
+        printf("value: `%s` | ", current->value);
+        printf("type: `%s`\n", token_type[current->type]);
+        current = current->next;
+    }
 }

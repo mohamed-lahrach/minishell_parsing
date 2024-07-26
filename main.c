@@ -1,28 +1,20 @@
 #include "minishell.h"
 
-int main(int argc, char **argv)
+void expand(t_lexer **lexer, t_envp *list_envp)
 {
-    t_lexer *lexer = NULL;
+    printf("expand\n");
+}
+
+void minishell_process(t_lexer **lexer, t_envp *list_envp)
+{
     char *input;
-    if (argc != 1)
-	{
-		printf("This program does not accept arguments\n");
-		exit(0);
-	}
-    while (1) 
+
+    while (1)
     {
         input = readline("minishell$ ");
-        if (input == NULL || strcmp(input, "exit") == 0)
-        {
-            if (input == NULL)
-                printf("No input provided\n");
-            else
-                printf("Exiting...\n");
+        if (!input)
             break;
-        }
-
         add_history(input);
-
         if (check_for_closed_quotes(input) == 0)
         {
             printf("Syntax Error: quotes are not closed\n");
@@ -36,36 +28,30 @@ int main(int argc, char **argv)
             free(input);
             continue;
         }
+        lexer_phase(lexer, input, list_envp);
 
-        lexer_phase(&lexer, input);
-        if (syntax_error(lexer))
+        if (syntax_error(*lexer))
         {
-            free_lexer(&lexer);
+            free_list(lexer);
             free(input);
             continue;
         }
-        
-
-        t_lexer *current = lexer;
-        const char *token_names[] = {
-            "PIPE",
-            "REDIRECT_OUT",
-            "REDIRECT_IN",
-            "REDIRECT_APPEND",
-            "REDIRECT_INPUT",
-            "WORD",
-            "WHITESPACE",
-        };
-        printf("%s\n", input);
-        while (current)
-        {
-            printf("Type: {%s}, Value: `%s`\n--------------------------------------\n", token_names[current->type], current->value);
-            current = current->next;
-        }
-
-        free_lexer(&lexer);
+        // for debugging
+        //show_lexer(*lexer);
+        free_list(lexer);
         free(input);
     }
-    //parser_phase(lexer);
+}
+int main(int argc, char **argv, char **envp)
+{
+    t_lexer *lexer = NULL;
+    t_envp *list_envp;
+    if (argc != 1)
+    {
+        printf("This program does not accept arguments\n");
+        exit(0);
+    }
+    list_envp = create_environment_node(envp);
+    minishell_process(&lexer, list_envp);
     return 0;
 }
