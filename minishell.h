@@ -29,7 +29,6 @@ typedef struct envp
 } t_envp;
 
 
-void expanding(t_lexer **lexer, char *value, enum token_type type, t_envp *list_envp);
 int	ft_strcmp(const char *s1, const char *s2);
 void show_lexer(t_lexer *lexer);
 t_envp *create_environment_node(char **envp);

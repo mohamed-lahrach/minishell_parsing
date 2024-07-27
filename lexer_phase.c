@@ -69,72 +69,12 @@ int is_alnum_or_special(char c)
 {
     return ft_isalnum(c) || c == '_';
 }
-char *append_alnum_chars(char *expanded_str, const char *value, int i)
+char *append_alnum_chars(char *expanded_str, const char *value, int *i)
 {
-    while (value[i] && is_alnum_or_special(value[i]))
+    while (value[*i] && is_alnum_or_special(value[*i]))
     {
-        expanded_str = append_char_to_string(expanded_str, value[i]);
-        i++;
-    }
-    return expanded_str;
-}
-char *expand_word(char *value, t_envp *list_envp)
-{
-    int i;
-    int inside_single_quotes;
-    int inside_double_quotes;
-    char *expanded_str;
-    int len_before_expansion;
-    int len_after_expansion;
-
-    i = 0;
-    inside_single_quotes = 0;
-    inside_double_quotes = 0;
-    expanded_str = NULL;
-
-    while (value[i])
-    {
-        if (value[i] == '"' && inside_double_quotes == 0)
-        {
-            inside_double_quotes = 1;
-        }
-        else if (value[i] == '\'' && !inside_double_quotes && inside_single_quotes == 0)
-        {
-            inside_single_quotes = 1;
-            break;
-        }
-
-        if (!inside_single_quotes && value[i] == '$' && value[i + 1] == '\0')
-        {
-            expanded_str = append_char_to_string(expanded_str, value[i]);
-            break;
-        }
-        else if (!inside_single_quotes && value[i] == '$' && ft_isdigit(value[i + 1]))
-        {
-            i += 2;
-            expanded_str = append_alnum_chars(expanded_str, value, i);
-            break;
-        }
-        else if (!inside_single_quotes && value[i] == '$' && ft_isalpha(value[i + 1]))
-        {
-            i += 1;
-            expanded_str = append_alnum_chars(expanded_str, value, i);
-            break;
-        }
-        else if (!inside_single_quotes && value[i] == '$' && value[i + 1] == '?')
-        {
-            i += 2;
-            expanded_str = append_char_to_string(expanded_str, '0');
-            break;
-        }
-        else if (!inside_single_quotes && value[i] == '$' && value[i + 1] == '$')
-        {
-            i += 2;
-            expanded_str = append_char_to_string(expanded_str, '0');
-            break;
-        }
-        else
-            i++;
+        expanded_str = append_char_to_string(expanded_str, value[*i]);
+        (*i)++;
     }
     return expanded_str;
 }
@@ -147,7 +87,6 @@ char *expand_env_vars(char *value, char *expanded_str, char *get_env)
     size_t final_str_len;
     char *final_str;
     int len_expaded_str;
-
 
     len_expaded_str = ft_strlen(expanded_str);
     final_str_len = ft_strlen(value) + ft_strlen(get_env) - len_expaded_str + 1; // Allocate enough space for the final string
@@ -178,32 +117,80 @@ char *expand_env_vars(char *value, char *expanded_str, char *get_env)
                 k++;
             }
             i += 1 + len_expaded_str; // Skip the '$' character
-            
         }
     }
     final_str[k] = '\0'; // Null-terminate the final string
     return final_str;
 }
-void expanding(t_lexer **lexer, char *value, enum token_type type, t_envp *list_envp)
+
+void expanding(char *value, char *expanded_str, t_envp *list_envp)
 {
-    t_lexer *current = *lexer;
-    char *expanded_str;
     char *get_env;
-    int len_get_env;
-    int len_value;
-    int len_expanded_str;
     char *final_str;
 
-    expanded_str = expand_word(value, list_envp);
-    if (expanded_str == NULL)
-        return;
     get_env = getenv(expanded_str);
-
     final_str = expand_env_vars(value, expanded_str, get_env);
-
-    printf("expanded_str: %s\n", expanded_str);
-    printf("final_str: %s\n", get_env);
+    printf("final_str: %s\n", final_str);
+    printf("get_env: %s\n", get_env);
     printf("value: %s\n", value);
+    printf("expanded_str: %s\n", expanded_str);
+
+    free(final_str); // Free the allocated memory
+}
+char *expand_word(t_lexer **lexer, char *value, enum token_type type, t_envp *list_envp)
+{
+    int i;
+    int inside_single_quotes;
+    int inside_double_quotes;
+    char *expanded_str;
+
+    i = 0;
+    inside_single_quotes = 0;
+    inside_double_quotes = 0;
+    expanded_str = NULL;
+
+    while (value[i])
+    {
+        if (value[i] == '"' && inside_double_quotes == 0)
+        {
+            inside_double_quotes = 1;
+        }
+        else if (value[i] == '\'' && !inside_double_quotes && inside_single_quotes == 0)
+        {
+            inside_single_quotes = 1;
+            break;
+        }
+
+        if (!inside_single_quotes && value[i] == '$' && value[i + 1] == '\0')
+        {
+            expanded_str = append_char_to_string(expanded_str, value[i]);
+        }
+        else if (!inside_single_quotes && value[i] == '$' && ft_isdigit(value[i + 1]))
+        {
+            i += 2;
+            expanded_str = append_alnum_chars(expanded_str, value, &i);
+            expanding(value, expanded_str, list_envp);
+        }
+        else if (!inside_single_quotes && value[i] == '$' && ft_isalpha(value[i + 1]))
+        {
+            i += 1;
+            expanded_str = append_alnum_chars(expanded_str, value, &i);
+            expanding(value, expanded_str, list_envp);
+        }
+        else if (!inside_single_quotes && value[i] == '$' && value[i + 1] == '?')
+        {
+            i += 2;
+            expanded_str = append_char_to_string(expanded_str, '0');
+        }
+        else if (!inside_single_quotes && value[i] == '$' && value[i + 1] == '$')
+        {
+            i += 2;
+            expanded_str = append_char_to_string(expanded_str, '0');
+        }
+        else
+            i++;
+    }
+    return expanded_str;
 }
 
 void lexer_phase(t_lexer **lexer, char *input, t_envp *list_envp)
@@ -251,7 +238,7 @@ void lexer_phase(t_lexer **lexer, char *input, t_envp *list_envp)
                 {
                     current_word = ft_substr(input, start, current_word_len);
                     append_node(lexer, create_node(current_word, WORD));
-                    expanding(lexer, current_word, WORD, list_envp);
+                    expand_word(lexer, current_word, WORD, list_envp);
                     current_word_len = 0;
                 }
                 start = i + 1;
@@ -287,6 +274,6 @@ void lexer_phase(t_lexer **lexer, char *input, t_envp *list_envp)
     {
         current_word = ft_substr(input, start, current_word_len);
         append_node(lexer, create_node(current_word, WORD));
-        expanding(lexer, current_word, WORD, list_envp);
+        expand_word(lexer, current_word, WORD, list_envp);
     }
 }
