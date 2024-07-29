@@ -37,7 +37,7 @@ void minishell_process(t_lexer **lexer, t_envp *list_envp)
             continue;
         }
         // for debugging
-        //show_lexer(*lexer);
+        show_lexer(*lexer);
         free_list(lexer);
         free(input);
     }

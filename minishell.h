@@ -29,6 +29,17 @@ typedef struct envp
 } t_envp;
 
 
+// expansion functions
+char *expandsion(t_lexer **lexer, char *value, enum token_type type, t_envp *list_envp);
+char *append_char_to_string(char *str, char c);
+char *append_alnum(char *key, char *value, int *i);
+char *replace_env_keys_with_values(char *str, char *key, t_envp *list_envp);
+int get_target_dollar(char *str, char *key);
+
+int is_alnum_or_special(char c);
+int ft_isdigit(int c);
+int ft_isalpha(int c);
+int ft_isalnum(int c);
 int	ft_strcmp(const char *s1, const char *s2);
 void show_lexer(t_lexer *lexer);
 t_envp *create_environment_node(char **envp);

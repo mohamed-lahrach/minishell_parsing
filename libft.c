@@ -126,3 +126,31 @@ int ft_strcmp(const char *s1, const char *s2)
     }
     return (unsigned char)*s1 - (unsigned char)*s2;
 }
+
+int ft_isdigit(int c)
+{
+    if (c >= '0' && c <= '9')
+        return (1);
+    else
+        return (0);
+}
+
+int ft_isalnum(int c)
+{
+    if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9'))
+        return (1);
+    else
+        return (0);
+}
+
+int ft_isalpha(int c)
+{
+    if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+        return (1);
+    else
+        return (0);
+}
+int is_alnum_or_special(char c)
+{
+    return ft_isalnum(c) || c == '_';
+}
