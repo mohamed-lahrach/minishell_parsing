@@ -28,7 +28,7 @@ char *append_char_to_string(char *str, char c)
 
 char *append_alnum(char *key, char *str, int *i)
 {
-    while (str[*i] && is_alnum_or_special(str[*i]))
+    while (str[*i] && is_alnum_or_underscore(str[*i]))
     {
         key = append_char_to_string(key, str[*i]);
         (*i)++;
@@ -36,7 +36,7 @@ char *append_alnum(char *key, char *str, int *i)
     return key;
 }
 
-char *expandsion(t_lexer **lexer, char *str, enum token_type type, t_envp *list_envp)
+char *expansion(t_lexer **lexer, char *str, enum token_type type, t_envp *list_envp)
 {
     int i;
     int inside_single_quotes;
@@ -63,18 +63,20 @@ char *expandsion(t_lexer **lexer, char *str, enum token_type type, t_envp *list_
 
         if (!inside_single_quotes && str[i] == '$' && str[i + 1] == '\0')
         {
-            key = append_char_to_string(key, str[i]);
+            key = append_char_to_string(key, '$');
             final_str = replace_env_keys_with_values(final_str, key, list_envp);
             key = NULL;
         }
         else if (!inside_single_quotes && str[i] == '$' && ft_isdigit(str[i + 1]))
         {
-            i += 2;
+            i += 1;
             key = append_alnum(key, str, &i);
+            if (ft_strlen(key) != 1)
+                key = key + 1;
             final_str = replace_env_keys_with_values(final_str, key, list_envp);
             key = NULL;
         }
-        else if (!inside_single_quotes && str[i] == '$' && ft_isalpha(str[i + 1]))
+        else if (!inside_single_quotes && str[i] == '$' && is_alnum_or_underscore(str[i + 1]))
         {
             i += 1;
             key = append_alnum(key, str, &i);

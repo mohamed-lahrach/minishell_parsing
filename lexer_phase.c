@@ -1,7 +1,5 @@
 #include "minishell.h"
 
-
-
 void lexer_phase(t_lexer **lexer, char *input, t_envp *list_envp)
 {
     int inside_quotes;
@@ -47,8 +45,9 @@ void lexer_phase(t_lexer **lexer, char *input, t_envp *list_envp)
                 if (current_word_len > 0)
                 {
                     current_word = ft_substr(input, start, current_word_len);
-                    expanded_word = expandsion(lexer, current_word, WORD, list_envp);
-                    append_node(lexer, create_node(expanded_word, WORD));
+                    expanded_word = expansion(lexer, current_word, WORD, list_envp);
+                    remove_quotes(&expanded_word);
+                    append_lexer_node(lexer, create_lexer_node(expanded_word, WORD));
                     current_word_len = 0;
                 }
                 start = i + 1;
@@ -71,8 +70,7 @@ void lexer_phase(t_lexer **lexer, char *input, t_envp *list_envp)
                     type = PIPE;
                     current_word = ft_substr(input + i, 0, 1);
                 }
-                append_node(lexer, create_node(current_word, type));
-                // expanding(lexer, current_word, WORD, list_envp);
+                append_lexer_node(lexer, create_lexer_node(current_word, type));
             }
             else
                 current_word_len++;
@@ -83,7 +81,8 @@ void lexer_phase(t_lexer **lexer, char *input, t_envp *list_envp)
     if (current_word_len > 0)
     {
         current_word = ft_substr(input, start, current_word_len);
-        expanded_word = expandsion(lexer, current_word, WORD, list_envp);
-        append_node(lexer, create_node(expanded_word, WORD));
+        expanded_word = expansion(lexer, current_word, WORD, list_envp);
+        remove_quotes(&expanded_word);
+        append_lexer_node(lexer, create_lexer_node(expanded_word, WORD));
     }
 }

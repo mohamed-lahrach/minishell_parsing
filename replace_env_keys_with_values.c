@@ -4,23 +4,21 @@ int get_target_dollar(char *str, char *key)
     int i;
     int j;
     int k;
-    int len_expanded_str;
 
     i = 0;
     j = 0;
     k = 0;
-    len_expanded_str = ft_strlen(key);
     while (str[i])
     {
         if (str[i] == '$')
         {
             j = i + 1;
-            while (str[j] == key[k])
+            while (str[j] == key[k] && key[k] != '\0')
             {
                 j++;
                 k++;
             }
-            if (k == len_expanded_str)
+            if (k == ft_strlen(key))
                 return i;
         }
         i++;
@@ -39,8 +37,11 @@ char *replace_env_keys_with_values(char *str, char *key, t_envp *list_envp)
     int len_key;
     int target_dollar;
 
-    value = getenv(key);
     len_key = ft_strlen(key);
+    value = getenv(key);
+    if (value == NULL)
+        value = ft_strdup("");
+
     final_str_len = ft_strlen(str) + ft_strlen(value) - len_key + 1;
     final_str = (char *)malloc(final_str_len * sizeof(char));
     if (final_str == NULL)
@@ -63,21 +64,15 @@ char *replace_env_keys_with_values(char *str, char *key, t_envp *list_envp)
         else
         {
             j = 0;
-            while (value[j])
-            {
-                final_str[k] = value[j];
-                j++;
-                k++;
-            }
+            if (value[0] != '\0')
+                while (value[j])
+                {
+                    final_str[k] = value[j];
+                    k++;
+                    j++;
+                }
             i += 1 + len_key;
-            break;
         }
-    }
-    while (str[i])
-    {
-        final_str[k] = str[i];
-        i++;
-        k++;
     }
 
     final_str[k] = '\0';

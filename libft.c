@@ -2,7 +2,9 @@
 
 size_t ft_strlen(const char *s)
 {
-    int len = 0;
+    int len;
+
+    len = 0;
     while (s[len] != '\0')
         len++;
     return len;
@@ -22,7 +24,7 @@ char *ft_strdup(const char *str)
     return dest;
 }
 
-t_lexer *create_node(char *value, enum token_type type)
+t_lexer *create_lexer_node(char *value, enum token_type type)
 {
     t_lexer *new_node = (t_lexer *)malloc(sizeof(t_lexer));
     if (!new_node)
@@ -53,7 +55,7 @@ t_envp *create_envp_node(char *line_envp)
     return new_node;
 }
 
-void append_node(t_lexer **lexer, t_lexer *new_node)
+void append_lexer_node(t_lexer **lexer, t_lexer *new_node)
 {
     if (*lexer == NULL)
     {
@@ -150,7 +152,7 @@ int ft_isalpha(int c)
     else
         return (0);
 }
-int is_alnum_or_special(char c)
+int is_alnum_or_underscore(char c)
 {
     return ft_isalnum(c) || c == '_';
 }

@@ -125,8 +125,8 @@ void show_lexer(t_lexer *lexer)
         };
     while (current != NULL)
     {
-        printf("value: `%s` | ", current->value);
-        printf("type: `%s`\n", token_type[current->type]);
+        printf("value: %s , ", current->value);
+        printf("type: %s\n", token_type[current->type]);
         current = current->next;
     }
 }
