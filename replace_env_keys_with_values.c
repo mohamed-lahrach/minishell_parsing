@@ -39,8 +39,13 @@ char *replace_env_keys_with_values(char *str, char *key, t_envp *list_envp)
 
     len_key = ft_strlen(key);
     value = getenv(key);
-    if (value == NULL)
+    if (ft_strcmp(key, "?") == 0)
+        value = ft_strdup("0");
+    else if(ft_isdigit(key[0]))
+        value = key + 1;
+    else if (value == NULL)
         value = ft_strdup("");
+    
 
     final_str_len = ft_strlen(str) + ft_strlen(value) - len_key + 1;
     final_str = (char *)malloc(final_str_len * sizeof(char));

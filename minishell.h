@@ -19,6 +19,7 @@ typedef struct lexer
 {
     char *value;
     enum token_type type;
+    struct lexer *prev;
     struct lexer *next;
 } t_lexer;
 typedef struct envp
@@ -27,6 +28,22 @@ typedef struct envp
     char *value;
     struct envp *next;
 } t_envp;
+
+typedef struct t_file
+{
+    char *file_name;
+    enum token_type file_type;
+    struct t_file *next;
+}t_file;
+
+typedef struct command
+{
+    char **command_chain;
+    // char *oldpwd;
+    // char *newpwd;
+    t_file *file;
+    struct command *next;
+} t_command;
 
 // expansion functions
 char *expansion(t_lexer **lexer, char *value, enum token_type type, t_envp *list_envp);
@@ -60,6 +77,11 @@ void lexer_phase(t_lexer **lexer, char *input, t_envp *list_envp);
 t_lexer *create_lexer_node(char *value, enum token_type type);
 void append_lexer_node(t_lexer **lexer, t_lexer *new_node);
 void show_lexer(t_lexer *lexer);
+t_lexer *get_last_node(t_lexer *head);
+
+// parser functions
+t_command *parser_phase(t_lexer *lexer);
+
 
 // general functions
 void minishell_process(t_lexer **lexer, t_envp *list_envp);

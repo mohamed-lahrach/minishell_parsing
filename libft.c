@@ -24,17 +24,6 @@ char *ft_strdup(const char *str)
     return dest;
 }
 
-t_lexer *create_lexer_node(char *value, enum token_type type)
-{
-    t_lexer *new_node = (t_lexer *)malloc(sizeof(t_lexer));
-    if (!new_node)
-        return NULL;
-    new_node->value = ft_strdup(value);
-    new_node->type = type;
-    new_node->next = NULL;
-    return new_node;
-}
-
 t_envp *create_envp_node(char *line_envp)
 {
     t_envp *new_node = (t_envp *)malloc(sizeof(t_envp));
@@ -55,31 +44,16 @@ t_envp *create_envp_node(char *line_envp)
     return new_node;
 }
 
-void append_lexer_node(t_lexer **lexer, t_lexer *new_node)
-{
-    if (*lexer == NULL)
-    {
-        *lexer = new_node;
-    }
-    else
-    {
-        t_lexer *current = *lexer;
-        while (current->next != NULL)
-        {
-            current = current->next;
-        }
-        current->next = new_node;
-    }
-}
 void append_envp_node(t_envp **envir, t_envp *new_node)
 {
+    t_envp *current;
     if (*envir == NULL)
     {
         *envir = new_node;
     }
     else
     {
-        t_envp *current = *envir;
+        current = *envir;
         while (current->next != NULL)
         {
             current = current->next;
@@ -90,8 +64,10 @@ void append_envp_node(t_envp **envir, t_envp *new_node)
 
 void free_list(t_lexer **lexer)
 {
-    t_lexer *current = *lexer;
+    t_lexer *current;
     t_lexer *next;
+
+    current = *lexer;
     while (current != NULL)
     {
         next = current->next;
@@ -154,5 +130,40 @@ int ft_isalpha(int c)
 }
 int is_alnum_or_underscore(char c)
 {
-    return ft_isalnum(c) || c == '_';
+    return (ft_isalnum(c) || c == '_');
+}
+
+t_lexer *create_lexer_node(char *value, enum token_type type)
+{
+    t_lexer *new_node = (t_lexer *)malloc(sizeof(t_lexer));
+    if (!new_node)
+        return NULL;
+    new_node->prev = NULL;
+    new_node->value = ft_strdup(value);
+    new_node->type = type;
+    new_node->next = NULL;
+    return new_node;
+}
+
+t_lexer *get_last_node(t_lexer *head)
+{
+    while (head->next)
+        head = head->next;
+    return head;
+}
+
+
+void append_lexer_node(t_lexer **lexer, t_lexer *new_node)
+{
+    t_lexer *last;
+    if (*lexer == NULL)
+    {
+        *lexer = new_node;
+    }
+    else
+    {
+        last = get_last_node(*lexer);
+        last->next = new_node;
+        new_node->prev = last;
+    }
 }

@@ -127,6 +127,18 @@ void show_lexer(t_lexer *lexer)
     {
         printf("value: %s , ", current->value);
         printf("type: %s\n", token_type[current->type]);
+        
+        if (current->prev != NULL)
+            printf("prev value: %s\n", current->prev->value);
+        else
+            printf("prev value: NULL\n");
+
+        if (current->next != NULL)
+            printf("next value: %s\n", current->next->value);
+        else
+            printf("next value: NULL\n");
+
+        printf("\n");
         current = current->next;
     }
 }

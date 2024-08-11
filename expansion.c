@@ -52,27 +52,18 @@ char *expansion(t_lexer **lexer, char *str, enum token_type type, t_envp *list_e
     while (str[i])
     {
         if (str[i] == '"' && inside_double_quotes == 0)
-        {
             inside_double_quotes = 1;
-        }
+        else if(str[i] == '"' && inside_double_quotes == 1)
+            inside_double_quotes = 0;
         else if (str[i] == '\'' && !inside_double_quotes && inside_single_quotes == 0)
         {
             inside_single_quotes = 1;
             break;
         }
-
-        if (!inside_single_quotes && str[i] == '$' && str[i + 1] == '\0')
-        {
-            key = append_char_to_string(key, '$');
-            final_str = replace_env_keys_with_values(final_str, key, list_envp);
-            key = NULL;
-        }
-        else if (!inside_single_quotes && str[i] == '$' && ft_isdigit(str[i + 1]))
+        if (!inside_single_quotes && str[i] == '$' && ft_isdigit(str[i + 1]))
         {
             i += 1;
             key = append_alnum(key, str, &i);
-            if (ft_strlen(key) != 1)
-                key = key + 1;
             final_str = replace_env_keys_with_values(final_str, key, list_envp);
             key = NULL;
         }
@@ -86,14 +77,14 @@ char *expansion(t_lexer **lexer, char *str, enum token_type type, t_envp *list_e
         else if (!inside_single_quotes && str[i] == '$' && str[i + 1] == '?')
         {
             i += 2;
-            key = append_char_to_string(key, '0');
+            key = append_char_to_string(key, '?');
             final_str = replace_env_keys_with_values(final_str, key, list_envp);
             key = NULL;
         }
         else if (!inside_single_quotes && str[i] == '$' && str[i + 1] == '$')
         {
             i += 2;
-            key = append_char_to_string(key, '0');
+            key = append_char_to_string(key, '$');
             final_str = replace_env_keys_with_values(final_str, key, list_envp);
             key = NULL;
         }
