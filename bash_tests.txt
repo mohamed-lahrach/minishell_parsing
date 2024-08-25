@@ -1,0 +1,53 @@
+ls -l >> out.txt | cat out.txt | wc -l
+
+-- embigous error 
+export a="l f"
+case  1: cat $a -> embigous error
+case 2 : cat < $h -> embigous error
+case 3 : 
+
+not expanding heredoc delimiter at all 
+inputs
+cat << $HOME
+>$USER
+>FJSDJ
+>FJSDJ
+>$HOME =====> The $HOME delimiter is not expanded.
+
+output
+mohamed
+FJSDJ
+FJSDJ
+
+
+
+
+if you find double or single quotes in delimiter of heredoc you send a flag to not expand  the inputs of the user 
+
+inputs
+cat << l
+> $HOME
+> $USER
+> L
+> L
+> l
+
+output
+/home/mohamed
+mohamed
+L
+L
+
+inputs
+cat << "l" OR cat << 'l'
+> $HOME
+> $USER
+> L
+> L
+> l
+output
+
+$HOME
+$USER
+L
+L
